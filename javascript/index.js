@@ -1,7 +1,8 @@
 
 //assign variable to the element
 const moviesContainer = document.getElementById("movies-container");
-const serchInputField = document.getElementById("search-input");
+const searchInput = document.getElementById("search-input");
+const searchButton = document.getElementById("search-button");
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -43,4 +44,31 @@ function moviesToShow(movies) {
         moviesContainer.appendChild(movieCard);
     })
 }
+searchButton.addEventListener("click", async() => {
+  const query = searchInput.value.trim();
+
+  if (query !== "") {
+    try {
+      const movies = await fetchMoviesQuery(query);
+      moviesToShow(movies);
+    } catch (error) {
+      console.log("Fetching error movies by query", error);
+      return [];
+    }
+  }
+  searchInput.value = " ";
+})
+
+async function fetchMoviesQuery(query) {
+
+  try {
+    const response = await fetch(`/movies?s=${query}`);
+    const data = await response.json();
+    return data.Search;
+  } catch (error) {
+    console.error("Fetching error movies", error);
+    moviesContainer.innerHTML = `<p>Error fetching movies. Please try again later.</p>`;
+  }  
+}
+
 
